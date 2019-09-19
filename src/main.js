@@ -54,6 +54,7 @@ window.addEventListener('popstate', function(e) {
   }else if(to.name === 'login'||to.name === 'reg'){
     next();
   }else{
+    
     next({
         path: '/login'
       });
