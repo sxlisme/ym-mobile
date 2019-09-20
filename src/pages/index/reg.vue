@@ -2,9 +2,11 @@
   <div class="content-box">
     <common-header :tittle="tittle" :showback="false" :addTask="false"></common-header>
     <div class="page-content">
-      <mt-field label="用户名" placeholder="请输入用户名" v-model="username"></mt-field>
-      <mt-field label="密码" placeholder="请输入密码" type="password" v-model="password"></mt-field>
-      <mt-field label="确认密码" placeholder="请再次确认密码" type="password" v-model="password2"></mt-field>
+      <div class="formBox">
+        <mt-field class='long_input' label="用户名" placeholder="请输入用户名" v-model="username"></mt-field>
+        <mt-field class='long_input' label="密码" placeholder="请输入密码" type="password" v-model="password"></mt-field>
+        <mt-field class='long_input' label="确认密码" placeholder="请再次确认密码" type="password" v-model="password2"></mt-field>
+      </div>
       <mt-button class='regbBtn' type="primary" @click='reg'>注册</mt-button>
       <mt-button class='regbBtn' @click="login">返回</mt-button>
       <br>
@@ -78,7 +80,24 @@ export default {
 @import "~styles/variable.less";
 
 .page-content {
-  margin-top: 20%;
+  .formBox {
+    width: 98%;
+    margin: 0 auto;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    margin-bottom: inherit;
+
+    .mint-cell-wrapper {
+      background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(50%, #ffffff), color-stop(50%, #ffffff00));
+      background-image: linear-gradient(180deg, #ffffff, #ffffff 50%, #ffffff00 50%);
+    }
+
+    .long_input {
+      width: 98%;
+    }
+  }
+
   .mb(98);
 }
 

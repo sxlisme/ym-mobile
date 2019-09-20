@@ -4,11 +4,13 @@
     <div>
     </div>
     <div class="page-content">
-      <mt-field label=" session" title="类型" placeholder="请输入 session" v-model="cookie"></mt-field>
-      <mt-radio align="left" title="类型" :value.sync="type" :options="typeOptions">
-      </mt-radio>
-      <mt-radio align="left" title="组数" :value.sync="times" :options="timesOptions">
-      </mt-radio>
+      <div class="formBox">
+        <mt-field label=" session" title="类型" placeholder="请输入 session" v-model="cookie"></mt-field>
+        <mt-radio align="left" title="类型" :value.sync="type" :options="typeOptions">
+        </mt-radio>
+        <mt-radio align="left" title="组数" :value.sync="times" :options="timesOptions">
+        </mt-radio>
+      </div>
       <mt-button class='loginBtn' type="primary" @click="addTask">提交</mt-button>
       <mt-button class='loginBtn' @click="toHome">返回</mt-button>
     </div>
@@ -17,6 +19,8 @@
 <script>
 import { mapMutations, mapGetters, mapState } from 'vuex';
 import commonHeader from 'common/common-header';
+import { addTasks } from '../../api/api';
+import { Indicator } from 'mint-ui';
 export default {
   data() {
     return {
@@ -69,7 +73,36 @@ export default {
     addTask() {
       var boo = this.testIsNull();
       if (!boo) return;
-      this.$toast(`${this.cookie}，${this.times},${this.type}`);
+      var username = sessionStorage.getItem('username');
+      var uid = sessionStorage.getItem('uid');
+      if (this.cookie && username && this.type && this.times && uid) {} else {
+        this.$toast('新增失败!');
+        return false;
+      }
+      var param = {
+        cookies: this.cookie,
+        username: username,
+        type: this.type,
+        times: this.times,
+        uid: uid
+      };
+      Indicator.open({
+        text: '加载中...',
+        spinnerType: 'fading-circle'
+      });
+      addTasks(param).then((res) => {
+        Indicator.close();
+        if (res && res.data.code === 200) {
+          this.$toast('新增成功!');
+          this.$router.togo('/home');
+        } else {
+          this.$toast('新增失败!');
+        }
+      }).catch((e) => {
+        Indicator.close();
+        console.log(e);
+        this.$toast('新增失败!');
+      });
     }
   },
   components: {
@@ -88,18 +121,44 @@ export default {
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
+.mint-cell-wrapper {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(50%, #ffffff), color-stop(50%, #ffffff00));
+  background-image: linear-gradient(180deg, #ffffff, #ffffff 50%, #ffffff00 50%);
+  background-size: 86% 0px !important;
+}
+
 @import "~styles/index.less";
 @import "~styles/variable.less";
 
-.content-box {
+.content-box {}
+
+.page-content {
+  margin-bottom: 0 !important;
+  display: block;
+
+  .formBox {
+    width: 98%;
+    margin: 0 auto;
+    margin-top: 10px;
+    overflow: hidden;
+    margin-bottom: inherit;
+
+    .mint-cell-wrapper {
+      background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffff), color-stop(50%, #ffffff), color-stop(50%, #ffffff00));
+      background-image: linear-gradient(180deg, #ffffff, #ffffff 50%, #ffffff00 50%) !important;
+    }
+
+    .long_input {
+      width: 98%;
+    }
+  }
+
   .loginBtn {
     width: 98%;
     margin-top: 5px;
+    min-height: 41px;
   }
-}
 
-.page-content {
-  margin-top: 10px;
   .mb(98);
 }
 

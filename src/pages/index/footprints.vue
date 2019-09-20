@@ -2,7 +2,7 @@
   <div class="content-box">
     <common-header :tittle="tittle" :showback="false"></common-header>
     <div class="page-content">
-      <mt-button @click="todetail">footprints</mt-button>
+       <h3>开发中...</h3>
     </div>
   </div>
 </template>

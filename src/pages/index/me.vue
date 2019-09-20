@@ -5,11 +5,12 @@
       <div class='headInfoBox'>
         <div class="headImg">
           <div class="pic">
+            <img class="imgPic" :src="imgSrc" alt="">
           </div>
         </div>
         <div class="userInfo">
           <div class="uname">{{username}}</div>
-          <div class="uid">用户id:1</div>
+          <div class="uid">用户id:{{uid}}</div>
         </div>
       </div>
       <br>
@@ -24,15 +25,28 @@
 <script>
 // import { mapMutations, mapGetters, mapState } from 'vuex'
 import commonHeader from 'common/common-header'
-import {baseUrl} from '../../api/api'
-console.log(baseUrl);
+import { getSession } from '../../api/api'
+// console.log(baseUrl);
 export default {
   data() {
     return {
-      session: 'SESSION=94e89769-73cf-4445-9419-3086a100359e',
+      session: 'session获取中...',
       tittle: '我的',
       username: '',
-      num: 0
+      num: 0,
+      uid: '',
+      status: 0
+    }
+  },
+  computed: {
+    imgSrc() {
+      if (this.username) {
+        var uname = this.username;
+        uname = uname.substr(0, 1)
+        return 'http://dummyimage.com/100x100/045fb0/FFF.png&text=' + uname;
+      } else {
+        return 'http://dummyimage.com/100x100/045fb0/FFF.png&text=' + '请登陆';
+      }
     }
   },
   created() {},
@@ -50,6 +64,18 @@ export default {
     },
     getUserInfo() {
       this.username = sessionStorage.getItem('username');
+      this.uid = sessionStorage.getItem('uid');
+      getSession({ uid: this.uid }).then((res) => {
+        if (res && res.data && res.data.length === 1) {
+          console.log(res.data[0].session);
+          this.session = res.data[0].session;
+          this.status = res.data[0].status;
+        } else {
+          this.$toast('session获取失败');
+        }
+      }).catch(() => {
+        this.$toast('session获取失败');
+      });
     }
   },
   components: {
@@ -87,7 +113,7 @@ export default {
 @import "~styles/variable.less";
 
 .page-content {
-
+  display: block;
   .mb(98);
 }
 
@@ -124,6 +150,12 @@ export default {
       height: 60px;
       background: #26a2ff;
       border-radius: 50%;
+
+      .imgPic {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+      }
     }
   }
 
@@ -143,6 +175,7 @@ export default {
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
+      text-align: left;
     }
 
     .uid {
@@ -150,6 +183,7 @@ export default {
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
+      text-align: left;
     }
   }
 }
