@@ -17,6 +17,9 @@
 <script>
 import { mapMutations, mapGetters, mapState } from 'vuex'
 import commonHeader from 'common/common-header'
+import { addUser } from '../../api/api'
+import { Indicator } from 'mint-ui'
+
 export default {
   data() {
     return {
@@ -53,8 +56,25 @@ export default {
     reg() {
       var boo = this.testIsNull();
       if (!boo) return;
-      this.$toast('注册中，请稍后。。。');
-      this.$router.togo('/login');
+      var param = {
+        gropid: 2,
+        pass: this.password,
+        username: this.username
+      };
+      Indicator.open({
+        text: '注册中...',
+        spinnerType: 'fading-circle'
+      });
+      addUser(param).then((res) => {
+        Indicator.close();
+        if (res && res.data && res.data.code === 200) {
+          this.$router.togo('/login');
+        } else {
+          this.$toast('用户已存在~');
+        }
+      }).catch((e) => {
+        this.$toast('注册失败,用户可能已存在~');
+      });
     },
     showInfo() {
       this.$toast('不可输入空格或\'(单引号)等特殊符号！');

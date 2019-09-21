@@ -27,5 +27,9 @@ export const getTaskLists = params => { return instance.post(`${baseUrl}/tasks/g
 export const addTasks = params => { return instance.post(`${baseUrl}/tasks/addTasks`, { params: params }); };
 // 获取用户列表
 export const getYangmaoUserList = params => { return instance.post(`${baseUrl}/tasks/getUserList`, { params: params }); };
-// 注册用户
-export const addUser = params => { return instance.post(`${baseUrl}/tasks/regUser`, { params: params }); };
+// 注册用户 注意参数和上面不同
+export const addUser = params => { return instance.post(`${baseUrl}/tasks/regUser`, params); };
+// 根据任务id 获取日志
+export const getGameLog = params => { return instance.post(`${baseUrl}/tasks/getGameLog`, { params: params }) };
+// 获取礼物
+export const getGifts = params => { return instance.post(`${baseUrl}/tasks/getGifts`, { params: params }) };

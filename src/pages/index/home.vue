@@ -11,9 +11,9 @@
           <div class='taskItem'>{{v.type|f_type}}*{{v.group_num}}</div>
         </div>
         <div class='taskCol'>
-          <div class='taskItem'>2019-09-15 13:48:55</div>
+          <div class='taskItem'>{{v.insert_time|i_time}}</div>
           <div class='taskItem'>-</div>
-          <div class='taskItem'>13:48:55</div>
+          <div class='taskItem'>{{v.finish_time|f_time}}</div>
           <div class='taskItem'>
             <mt-badge size="small" v-if="v.status===0" type="primary">等待</mt-badge>
             <mt-badge size="small" v-else-if="v.status===-1" type="error">失效</mt-badge>
@@ -21,19 +21,22 @@
             <mt-badge size="small" v-else-if="v.status===2" type="success">完毕</mt-badge>
           </div>
         </div>
-        <div class='taskCol'>
+        <div class='taskCol' v-show ="v.status!==-1">
           <div class='taskItem'>积分:
             <mt-badge v-if='v.harvest*1>0' size="small" type="success">{{v.harvest}}</mt-badge>
             <mt-badge v-else size="small" type="error">{{v.harvest}}</mt-badge>
           </div>
           <div class='taskItem'>
-            <mt-badge type="primary">奖品</mt-badge>
+            <mt-badge type="primary" @click.native="showGift(v.has_goods)" size="small" v-show="v.has_goods!==''">奖品</mt-badge>
+            <span v-show="v.has_goods==''&&v.status===2">未中奖</span>
+            <!-- <mt-badge size="small" color="#888" v-show="v.has_goods==''&&v.status===2">未中奖</mt-badge>  -->
           </div>
           <div class='taskItem'>
-            <mt-badge type="primary" @click.native="toLogs(v.id)">日志</mt-badge>
+            <mt-badge type="primary" size="small" @click.native="toLogs(v.id)">日志</mt-badge>
           </div>
           <div class='taskItem'>
-            <mt-badge type="primary">一键重跑</mt-badge>
+            <mt-badge type="primary" size="small" v-show="v.status!==-1" @click.native="oneKeyRun(v)">一键重跑</mt-badge>
+            <!-- <mt-badge size="small" color="#888" v-show="v.status===-1" >一键重跑</mt-badge> -->
           </div>
         </div>
       </div>
@@ -47,7 +50,7 @@
 <script>
 import { mapMutations, mapGetters, mapState } from 'vuex'
 import commonHeader from 'common/common-header'
-import { getTaskLists } from '../../api/api'
+import { getTaskLists, addTasks } from '../../api/api'
 import { dateFtt } from '../../util/utils'
 import { Indicator } from 'mint-ui'
 // import { ERR_OK } from 'config/index'
@@ -63,10 +66,18 @@ export default {
       total: 1, // 总条数
       allLoaded: true,
       moreBtnName: '加载更多',
-      taskList: [{ 'id': '10', 'uid': 2, 'type': 'mb', 'username': 'xiaoliang', 'insert_time': '2019-09-15T05:48:55.000Z', 'finish_time': '0000-00-00 00:00:00', 'group_num': 120, 'status': 0, 'cookies': 'SESSION=59cc6946-eb53-4930-9301-46955d31e3dd', 'harvest': '', 'has_goods': '' }, { 'id': '5', 'uid': 6, 'type': 'mb', 'username': 'Cindy1234', 'insert_time': '2019-09-14T13:05:19.000Z', 'finish_time': '2019-09-14T13:06:10.000Z', 'group_num': 120, 'status': -1, 'cookies': ' SESSION=ef61bf3b-43a3-426a-b7d2-1242edda6680; ', 'harvest': '3457', 'has_goods': '' }, { 'id': '3', 'uid': 2, 'type': 'mb', 'username': 'xiaoliang', 'insert_time': '2019-09-14T06:43:26.000Z', 'finish_time': '2019-09-14T07:20:29.000Z', 'group_num': 120, 'status': 1, 'cookies': 'SESSION=00e691f8-1b37-4ac1-b189-c99ef4707306', 'harvest': '-506', 'has_goods': '标准洗车服务（1次）权益|标准洗车服务（1次）权益' }, { 'id': '2', 'uid': 2, 'type': 'mb', 'username': 'xiaoliang', 'insert_time': '2019-09-14T02:06:29.000Z', 'finish_time': '2019-09-14T02:07:06.000Z', 'group_num': 120, 'status': -1, 'cookies': 'SESSION=38862ea6-be47-4d48-aca1-9a042706991c', 'harvest': '762', 'has_goods': '' }]
+      taskList: []
     }
   },
   methods: {
+    refreshData() {
+      this.page = 1;
+      this.total = 1;
+      this.allLoaded = true;
+      this.moreBtnName = '加载更多';
+      this.taskList = [];
+      this.getTaskList();
+    },
     ...mapMutations({
       setNum: 'SET_NUM'
     }),
@@ -84,9 +95,33 @@ export default {
       this.page += 1;
       console.log('加载数据:' + this.page);
     },
+    showGift(v) {
+      this.$toast(v);
+    },
+    oneKeyRun(v) {
+      var param = {
+        cookies: v.cookies,
+        username: v.username,
+        type: v.type,
+        times: v.group_num,
+        uid: v.uid
+      };
+      addTasks(param).then((res) => {
+        Indicator.close();
+        if (res && res.data.code === 200) {
+          this.$toast('已重跑~');
+          this.refreshData();
+        } else {
+          this.$toast('操作失败!');
+        }
+      }).catch((e) => {
+        Indicator.close();
+        console.log(e);
+        this.$toast('操作失败!');
+      });
+    },
     getTaskList() {
       var param = { 'page': this.page, name: sessionStorage.getItem('username') };
-      console.log(param);
       Indicator.open({
         text: '加载中...',
         spinnerType: 'fading-circle'
@@ -166,6 +201,12 @@ export default {
       } else {
         return `<mt-badge  size="small" type="success">${v}</mt-badge>`
       }
+    },
+    i_time: (v) => { // 插入时间
+      return dateFtt('yyyy-MM-dd hh:mm:ss', v);
+    },
+    f_time: (v) => { // 完成时间
+      return dateFtt('hh:mm:ss', v);
     }
   }
 };
@@ -183,8 +224,8 @@ export default {
   .mb(98);
 
   .taskListCard {
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     background: #fff;
     display: -webkit-box;
     display: -ms-flexbox;
@@ -192,7 +233,7 @@ export default {
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
     width: 100%;
-    border-radius: 20px;
+    border-radius: 10px;
 
     .taskCol {
       display: flex;
