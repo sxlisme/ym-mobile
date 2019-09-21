@@ -67,7 +67,6 @@ export default {
       this.uid = sessionStorage.getItem('uid');
       getSession({ uid: this.uid }).then((res) => {
         if (res && res.data && res.data.length === 1) {
-          console.log(res.data[0].session);
           this.session = res.data[0].session;
           this.status = res.data[0].status;
         } else {

@@ -10,17 +10,16 @@ import Mint from 'mint-ui'
 import 'mint-ui/lib/style.css'
 import FastClick from 'fastclick'
 import '../static/js/flexible.js'
-if (process.env.MOCK) {    // 判断是否为mock模式
+if (process.env.MOCK) { // 判断是否为mock模式
   require('./mock/index.js')
 }
 /**
-*监听浏览器点击返回前进操作动画
-*浏览器端使用需要注意路由path的创建，二级应该在一级的基础上添加
-*如一级/Home，则二级为/Home/Detail，依次往后加，如果是app的话可忽略以下代码
-*/
- let init = 0
+ *监听浏览器点击返回前进操作动画
+ *浏览器端使用需要注意路由path的创建，二级应该在一级的基础上添加
+ *如一级/Home，则二级为/Home/Detail，依次往后加，如果是app的话可忽略以下代码
+ */
+let init = 0
 window.addEventListener('popstate', function(e) {
-  console.log('popstate');
   init++
   if (init < 2) {
     router.beforeEach((to, from, next) => {
@@ -47,20 +46,20 @@ window.addEventListener('popstate', function(e) {
 }, false)
 
 
- router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
   var islogin = sessionStorage.getItem('username');
-  if(islogin){
+  if (islogin) {
     next();
-  }else if(to.name === 'login'||to.name === 'reg'){
+  } else if (to.name === 'login' || to.name === 'reg') {
     next();
-  }else{
-    
+  } else {
+
     next({
-        path: '/login'
-      });
+      path: '/login'
+    });
   }
-     
-    })
+
+})
 // app 修改状态栏颜色
 // document.addEventListener('plusready', function () {
 //   let System = window.plus.os.name

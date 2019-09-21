@@ -124,7 +124,6 @@ export default {
         Indicator.close();
         if (res && res.data.code === 200) {
           this.page++;
-          console.log(this.page)
           this.list.push(...res.data.data);
           this.total = res.data.total;
           this.allLoaded = true;
