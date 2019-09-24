@@ -1,25 +1,25 @@
 <template>
   <div class="content-box">
     <common-header :tittle="tittle" :showback="false"></common-header>
-    <div class="page-content">
-      <div class="heardBox">
-        <ul class='ulBox hearUl'>
-          <li class="libox">
-            <div class="log_card_box">
-              <div class="item_box">
-                <div class="mainContent">{{total}}</div>
-                <div class="tittles">中奖记录（条）</div>
-              </div>
-              <div class="item_box">
-                <div class="mainContent">
-                  {{nowDate}}
-                </div>
-                <div class="tittles">截止当前</div>
-              </div>
+    <div class="heardBox">
+      <ul class='ulBox hearUl'>
+        <li class="libox">
+          <div class="log_card_box">
+            <div class="item_box">
+              <div class="mainContent">{{total}}</div>
+              <div class="tittles">中奖记录（条）</div>
             </div>
-          </li>
-        </ul>
-      </div>
+            <div class="item_box">
+              <div class="mainContent">
+                {{nowDate}}
+              </div>
+              <div class="tittles">截止当前</div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="page-content">
       <div class="giftBox">
         <ul class='ulBox' v-infinite-scroll="getGifts" infinite-scroll-disabled="loading" infinite-scroll-distance="10">
           <li class="libox" v-for="(item,i) in list" :key='item'>
@@ -166,32 +166,39 @@ export default {
 @import "~styles/index.less";
 @import "~styles/variable.less";
 
-.page-content {
+.heardBox {
   display: flex;
+  width: 100%;
+  margin: 0 auto;
+  background: #26a2ff;
 
-  .heardBox {
-    display: flex;
+  .ulBox {
     width: 100%;
-    margin: 0 auto;
-    background: #26a2ff;
 
-    .ulBox {
-      .log_card_box {
-        background: #26a2ff;
+    .log_card_box {
+      background: #26a2ff;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      margin-bottom: 20px;
 
-        .item_box {
-          .mainContent {
-            color: #fff;
-          }
-
-          .tittles {
-            color: #d9d9d9;
-          }
-
+      .item_box {
+        .mainContent {
+          color: #fff;
+          font-size: 18px;
         }
+
+        .tittles {
+          color: #d9d9d9;
+        }
+
       }
     }
   }
+}
+
+.page-content {
+  display: block;
 
   .giftBox {
     height: 100%;
