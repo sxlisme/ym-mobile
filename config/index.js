@@ -14,7 +14,8 @@ let serverObj = {
     proxyTable: {},
 
     // Various Dev Server settings
-    host: 'localhost', // can be overwritten by process.env.HOST 调试时修改
+    // host: 'localhost', // can be overwritten by process.env.HOST 调试时修改
+    host: getLocalIP(),
     port: 8088, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: true,
     errorOverlay: true,
@@ -98,3 +99,33 @@ if (process.env.NODE_ENV === 'production') {
   serverObj.build.env = (process.env.DEV_ENV === 'test' ? require('./prod.test.env') : require('./prod.env'))
 }
 module.exports = serverObj
+
+function getLocalIP() {
+  const os = require('os');
+  const osType = os.type(); // 系统类型
+  // console.log(osType);
+  const netInfo = os.networkInterfaces(); // 网络信息
+  let ip = '';
+  //console.log(netInfo)
+  if (osType === 'Windows_NT') {
+    for (let dev in netInfo) {
+      if (dev === 'WLAN') {
+        for (let j = 0; j < netInfo[dev].length; j++) {
+          if (netInfo[dev][j].family === 'IPv4') {
+            ip = netInfo[dev][j].address;
+            break;
+          }
+        }
+        break;
+      } else {
+        ip = 'localhost';
+      }
+    }
+
+  } else {
+    //ip = netInfo.eth0[0].address;
+    ip = 'localhost'
+  }
+  console.log(ip);
+  return ip;
+}
