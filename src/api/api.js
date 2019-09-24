@@ -2,7 +2,7 @@
 import axios from 'axios';
 var instance = axios.create({ headers: { 'content-type': 'application/x-www-form-urlencoded' } });
 
-let baseUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:8456' : '';
+let baseUrl = process.env.NODE_ENV === 'development' ? 'http://' + location.hostname + ':8456' : '';
 console.log(baseUrl);
 // 登陆
 export const requestLogin = params => {
