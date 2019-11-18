@@ -28,6 +28,14 @@ export default {
   },
   created() {},
   methods: {
+    // 记忆登录
+    cookieLogin() {
+      if (this.getCookie('username') && this.getCookie('pw')) {
+        this.username = this.getCookie('username');
+        this.password = this.getCookie('pw');
+        this.login();
+      }
+    },
     ...mapMutations({
       setNum: 'SET_NUM'
     }),
@@ -61,6 +69,8 @@ export default {
             this.$toast(res.msg);
             sessionStorage.setItem('username', res.user.name);
             sessionStorage.setItem('uid', res.user.id);
+            this.setCookie('username', this.username, 365);
+            this.setCookie('pw', this.password, 365);
             this.$router.togo('/home');
           }
         }).catch((err) => {
@@ -77,10 +87,32 @@ export default {
       sessionStorage.clear();
       this.$router.togo('/login');
       this.$toast('退出成功!');
+    },
+    // cookie
+    setCookie(name, value, day) {
+      var oDate = new Date();
+      oDate.setDate(oDate.getDate() + day);
+      document.cookie = name + '=' + value + ';expires=' + oDate;
+    },
+    getCookie(name) {
+      var str = document.cookie;
+      var arr = str.split('; ');
+      for (var i = 0; i < arr.length; i++) {
+        var newArr = arr[i].split('=');
+        if (newArr[0] === name) {
+          return newArr[1];
+        }
+      }
+    },
+    removeCookie(name) {
+      this.setCookie(name, 1, -1);
     }
   },
   components: {
     commonHeader
+  },
+  mounted() {
+    this.cookieLogin();
   },
   computed: {
     ...mapGetters([
